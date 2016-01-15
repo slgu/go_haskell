@@ -31,3 +31,11 @@ main_sqrt x = [ y | y <- [1..x], y * y == x]
 
 
 sqrt_seq x = [let map_sqrt xs = [main_sqrt x | x <- xs] in map_sqrt [1..x]]
+
+maximum' (x:xs)
+    | x > max_extra = x
+    | otherwise = max_extra
+    where max_extra = maximum' xs
+
+my_reverse (x:xs) = my_reverse xs ++ [x]
+my_repeat' x = x:my_repeat' x
