@@ -1,7 +1,7 @@
 ---t putStrLn "hello, world"
 --putStrLn "hello, world" :: IO ()
 --That's good practice, because indentation is important in Haskell.
-
+import System.Environment
 import Control.Monad
 import System.IO
 test_recursive_getline = do
@@ -14,7 +14,7 @@ test_recursive_getline = do
 
 
 
-main = test_file_v2
+main = command_dispatch
 --mapM :: (Monad m, Traversable t) => (a -> m b) -> t a -> m (t b)
 --example
 --  print :: Show a => a -> IO ()
@@ -56,12 +56,34 @@ my_with_file :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
 
 my_with_file filepath io_mode f = do
     handle <- openFile filepath io_mode
-    return $ f handle
+    result <- (f handle)
     hClose handle
+    return result
 
 test_file_v2 = do
     my_with_file "123" ReadMode  (\handle -> do
         contents <- hGetContents handle
         putStr contents)
+
+
+--dispatch
+dispatch :: [(String, [String] -> IO ())]
+dispatch = [("add", add),
+            ("view", view)
+            ]
+command_dispatch = do
+    (command:args) <- getArgs
+    let (Just action) = lookup command dispatch
+    action args
+
+add [filename, text] = appendFile filename text
+
+view [filename] = do
+    handle <- openFile filename ReadMode
+    contents <- hGetContents handle
+    putStrLn contents
+    hClose handle
+
+
 
 --define some functions here
