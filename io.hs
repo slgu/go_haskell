@@ -4,6 +4,8 @@
 import System.Environment
 import Control.Monad
 import System.IO
+import System.Random
+import qualified Data.ByteString.Lazy as BL
 test_recursive_getline = do
     line <- getLine
     if null line
@@ -14,7 +16,7 @@ test_recursive_getline = do
 
 
 
-main = command_dispatch
+main = command_copy
 --mapM :: (Monad m, Traversable t) => (a -> m b) -> t a -> m (t b)
 --example
 --  print :: Show a => a -> IO ()
@@ -84,6 +86,23 @@ view [filename] = do
     putStrLn contents
     hClose handle
 
+
+--lazy strict bytestring
+--lazy bytestring copyfile
+
+command_copy = do
+    (file1:file2:_) <- getArgs
+    copy_file_lazy_bytestring file1 file2
+
+copy_file_lazy_bytestring :: FilePath -> FilePath -> IO()
+
+copy_file_lazy_bytestring origin dest = do
+    contents <- BL.readFile origin
+    BL.writeFile dest contents
+
+--generally bytestring can get better performance than string,
+--because it uses chunks with better performance not [Char]
+--http://meiersi.github.io/HaskellerZ/meetups/2012%2001%2019%20-%20The%20bytestring%20library/handout.html
 
 
 --define some functions here
